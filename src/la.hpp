@@ -1,8 +1,47 @@
+#include <initializer_list>
+#include <iostream>
+#include <array>
+
 namespace la {
 	template<typename T, int R, int C>
 	class Matrix {
+	public:
+		Matrix() = default;
+		Matrix(T value) {
+			for (auto& row : data) {
+				row.fill(value);
+			}
+		}
+		Matrix(std::initializer_list<std::initializer_list<T>> matrix) {
+			int r = 0;
+			for (auto& row : matrix) {
+				int c = 0;
+				for (auto& value : row) {
+					data[r][c] = value;
+					c++;
+				}
+				r++;
+			}
+		}
+		
+		auto& operator[](size_t i) {
+			return data[i];
+		}
+		const auto& operator[](size_t i) const {
+			return data[i];
+		}
+		friend std::ostream& operator<<(std::ostream& os, const Matrix& matrix) {
+			for (auto& row : matrix.data) {
+				for (auto& value : row) {
+					os << value << ' ';
+				}
+				os << '\n';
+			}
+			return os;
+		}
+		
 	private:
-		T matrix[R][C];
+		std::array<std::array<T, C>, R> data{};
 	};
 	
 	template<typename T>
@@ -14,8 +53,8 @@ namespace la {
 	template<typename T, int N>
 	using MatrixNxN = Matrix<T, N, N>;
 	
-	template<typename T, int S>
-	using RowVector = Matrix<T, S, 1>;
-	template<typename T, int S>
-	using ColumnVector = Matrix<T, 1, S>;
+	template<typename T, int N>
+	using RowVector = Matrix<T, 1, N>;
+	template<typename T, int N>
+	using ColumnVector = Matrix<T, N, 1>;
 }
